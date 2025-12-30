@@ -29,7 +29,10 @@ runs:
       uses: actions/setup-node@v6
       with:
         node-version: ${{ inputs.node_version }}
-        cache: 'yarn'
+
+    - name: Enable corepack
+      shell: bash
+      run: corepack enable
 
     - name: Install Node Dependencies
       shell: bash
