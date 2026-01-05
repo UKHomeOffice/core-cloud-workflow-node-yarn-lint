@@ -1,0 +1,43 @@
+name: Self Test - yarn lint action
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  test-valid:
+    name: Test - Valid Node yarn lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Run yarn lint (valid config)
+        uses: ./
+        with:
+          working_directory: "tests/test-lint-valid"
+
+  test-invalid:
+    name: Test - Invalid Node yarn lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Run yarn lint (invalid config)
+        id: lint
+        uses: ./
+        continue-on-error: true
+        with:
+          working_directory: "tests/test-lint-invalid"
+
+      - name: Assert failure
+        run: |
+          if [ "${{ steps.lint.outputs.yarn_lint_exit_code }}" -eq 0 ]; then
+            echo "Expected yarn lint to fail but it succeeded."
+            exit 1
+          fi
